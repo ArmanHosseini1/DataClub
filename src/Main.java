@@ -51,7 +51,12 @@ public class Main {
 	        				équipes[0].checkIndStats();
 	        				break;
 	        			case 4:
+	        				try {
 	        				équipes[0].avantMatch();
+	        				} 
+	        				catch (Exception e) {
+	        					
+	        				}
 	        				break;
 	        			case 5:
 	        				break;

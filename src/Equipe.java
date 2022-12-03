@@ -1,6 +1,11 @@
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.function.Consumer;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutorService;
 
 public class Equipe {
 	private String nom;
@@ -147,8 +152,23 @@ public class Equipe {
 			System.out.println("Vous devez d'abord créer un joueur.");
 		}
 	}
-	public void avantMatch() {
+	public void avantMatch() throws Exception {
 		String équipeTemp = inputOutput("Quelle est l'équipe à affronter?");
+		String homeDirectory = System.getProperty("user.home");
+		Process process;
+		boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+		if (isWindows) {
+		    process = Runtime.getRuntime().exec(String.format("cmd.exe /c dir %s", homeDirectory));
+		} else {
+		    process = Runtime.getRuntime().exec(String.format("/bin/sh -c ls %s", homeDirectory));
+		}
+		StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+		Future future = Executors.newSingleThreadExecutor().submit(streamGobbler);
+
+		int exitCode = process.waitFor();
+		assert exitCode == 0;
+
+		future.get();
 		// Passer en OCaml 
 	}
 	public int ActualLength() {
